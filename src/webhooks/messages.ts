@@ -63,6 +63,8 @@ export const MediaObjectSchema: z.ZodType<{
 	caption?: string
 	filename?: string
 	voice?: boolean
+	url?: string
+	animated?: boolean
 }> = z.object({
 	/** Media ID */
 	id: z.string(),
@@ -76,6 +78,10 @@ export const MediaObjectSchema: z.ZodType<{
 	filename: z.string().optional(),
 	/** Whether this is a voice message (for audio) */
 	voice: z.boolean().optional(),
+	/** URL to download the media */
+	url: z.string().optional(),
+	/** Whether this is an animated sticker */
+	animated: z.boolean().optional(),
 })
 
 export type MediaObject = z.infer<typeof MediaObjectSchema>
@@ -99,19 +105,22 @@ export type Reaction = z.infer<typeof ReactionSchema>
  * Location object
  */
 export const LocationSchema: z.ZodType<{
-	latitude: string
-	longitude: string
+	latitude: string | number
+	longitude: string | number
 	name?: string
 	address?: string
+	url?: string
 }> = z.object({
 	/** Latitude of the location */
-	latitude: z.string(),
+	latitude: z.union([z.string(), z.number()]),
 	/** Longitude of the location */
-	longitude: z.string(),
+	longitude: z.union([z.string(), z.number()]),
 	/** Name of the location */
 	name: z.string().optional(),
 	/** Address of the location */
 	address: z.string().optional(),
+	/** URL of the location */
+	url: z.string().optional(),
 })
 
 export type Location = z.infer<typeof LocationSchema>
@@ -204,18 +213,301 @@ export type Interactive = z.infer<typeof InteractiveSchema>
  */
 export const ErrorObjectSchema: z.ZodType<{
 	code: number
-	details?: string
 	title?: string
+	message?: string
+	error_data?: {
+		details: string
+	}
+	href?: string
 }> = z.object({
 	/** Error code */
 	code: z.number().int(),
-	/** Error details */
-	details: z.string().optional(),
 	/** Error title */
 	title: z.string().optional(),
+	/** Error message */
+	message: z.string().optional(),
+	/** Error data object */
+	error_data: z
+		.object({
+			/** Error details */
+			details: z.string(),
+		})
+		.optional(),
+	/** Link to error documentation */
+	href: z.string().optional(),
 })
 
 export type ErrorObject = z.infer<typeof ErrorObjectSchema>
+
+/**
+ * Contact name object
+ */
+export const ContactNameSchema: z.ZodType<{
+	formatted_name: string
+	first_name?: string
+	last_name?: string
+	middle_name?: string
+	suffix?: string
+	prefix?: string
+}> = z.object({
+	/** Full formatted name */
+	formatted_name: z.string(),
+	/** First name */
+	first_name: z.string().optional(),
+	/** Last name */
+	last_name: z.string().optional(),
+	/** Middle name */
+	middle_name: z.string().optional(),
+	/** Name suffix */
+	suffix: z.string().optional(),
+	/** Name prefix */
+	prefix: z.string().optional(),
+})
+
+export type ContactName = z.infer<typeof ContactNameSchema>
+
+/**
+ * Contact phone object
+ */
+export const ContactPhoneSchema: z.ZodType<{
+	phone?: string
+	type?: string
+	wa_id?: string
+}> = z.object({
+	/** Phone number */
+	phone: z.string().optional(),
+	/** Type of phone (CELL, MAIN, IPHONE, HOME, WORK) */
+	type: z.string().optional(),
+	/** WhatsApp ID */
+	wa_id: z.string().optional(),
+})
+
+export type ContactPhone = z.infer<typeof ContactPhoneSchema>
+
+/**
+ * Contact organization object
+ */
+export const ContactOrgSchema: z.ZodType<{
+	company?: string
+	department?: string
+	title?: string
+}> = z.object({
+	/** Company name */
+	company: z.string().optional(),
+	/** Department name */
+	department: z.string().optional(),
+	/** Contact's title */
+	title: z.string().optional(),
+})
+
+export type ContactOrg = z.infer<typeof ContactOrgSchema>
+
+/**
+ * Contact address object
+ */
+export const ContactAddressSchema: z.ZodType<{
+	street?: string
+	city?: string
+	state?: string
+	zip?: string
+	country?: string
+	country_code?: string
+	type?: string
+}> = z.object({
+	/** Street address */
+	street: z.string().optional(),
+	/** City */
+	city: z.string().optional(),
+	/** State */
+	state: z.string().optional(),
+	/** ZIP code */
+	zip: z.string().optional(),
+	/** Country */
+	country: z.string().optional(),
+	/** Country code */
+	country_code: z.string().optional(),
+	/** Address type (HOME, WORK) */
+	type: z.string().optional(),
+})
+
+export type ContactAddress = z.infer<typeof ContactAddressSchema>
+
+/**
+ * Contact email object
+ */
+export const ContactEmailSchema: z.ZodType<{
+	email?: string
+	type?: string
+}> = z.object({
+	/** Email address */
+	email: z.string().optional(),
+	/** Email type (HOME, WORK) */
+	type: z.string().optional(),
+})
+
+export type ContactEmail = z.infer<typeof ContactEmailSchema>
+
+/**
+ * Contact URL object
+ */
+export const ContactUrlSchema: z.ZodType<{
+	url?: string
+	type?: string
+}> = z.object({
+	/** URL */
+	url: z.string().optional(),
+	/** URL type (HOME, WORK) */
+	type: z.string().optional(),
+})
+
+export type ContactUrl = z.infer<typeof ContactUrlSchema>
+
+/**
+ * Contact item in contacts message
+ */
+export const ContactItemSchema: z.ZodType<{
+	name: z.infer<typeof ContactNameSchema>
+	org?: z.infer<typeof ContactOrgSchema>
+	phones?: Array<z.infer<typeof ContactPhoneSchema>>
+	emails?: Array<z.infer<typeof ContactEmailSchema>>
+	urls?: Array<z.infer<typeof ContactUrlSchema>>
+	addresses?: Array<z.infer<typeof ContactAddressSchema>>
+	birthday?: string
+}> = z.object({
+	/** Contact name */
+	name: ContactNameSchema,
+	/** Organization */
+	org: ContactOrgSchema.optional(),
+	/** Phone numbers */
+	phones: z.array(ContactPhoneSchema).optional(),
+	/** Email addresses */
+	emails: z.array(ContactEmailSchema).optional(),
+	/** URLs */
+	urls: z.array(ContactUrlSchema).optional(),
+	/** Addresses */
+	addresses: z.array(ContactAddressSchema).optional(),
+	/** Birthday (YYYY-MM-DD) */
+	birthday: z.string().optional(),
+})
+
+export type ContactItem = z.infer<typeof ContactItemSchema>
+
+/**
+ * Product item in order
+ */
+export const ProductItemSchema: z.ZodType<{
+	product_retailer_id: string
+	quantity: string | number
+	item_price: string | number
+	currency: string
+}> = z.object({
+	/** Product retailer ID */
+	product_retailer_id: z.string(),
+	/** Quantity */
+	quantity: z.union([z.string(), z.number()]),
+	/** Item price */
+	item_price: z.union([z.string(), z.number()]),
+	/** Currency code */
+	currency: z.string(),
+})
+
+export type ProductItem = z.infer<typeof ProductItemSchema>
+
+/**
+ * Order object
+ */
+export const OrderSchema: z.ZodType<{
+	catalog_id: string
+	product_items: Array<z.infer<typeof ProductItemSchema>>
+	text?: string
+}> = z.object({
+	/** Catalog ID */
+	catalog_id: z.string(),
+	/** Product items in the order */
+	product_items: z.array(ProductItemSchema),
+	/** Optional text message */
+	text: z.string().optional(),
+})
+
+export type Order = z.infer<typeof OrderSchema>
+
+/**
+ * System message object
+ */
+export const SystemMessageSchema: z.ZodType<{
+	body?: string
+	type?: string
+	wa_id?: string
+	customer?: string
+	identity?: string
+	user?: string
+	new_wa_id?: string
+}> = z.object({
+	/** System message body */
+	body: z.string().optional(),
+	/** Type of system message (customer_changed_number, customer_identity_changed, etc.) */
+	type: z.string().optional(),
+	/** WhatsApp ID */
+	wa_id: z.string().optional(),
+	/** Customer phone number */
+	customer: z.string().optional(),
+	/** Identity hash */
+	identity: z.string().optional(),
+	/** User description */
+	user: z.string().optional(),
+	/** New WhatsApp ID (for customer_changed_number) */
+	new_wa_id: z.string().optional(),
+})
+
+export type SystemMessage = z.infer<typeof SystemMessageSchema>
+
+/**
+ * Referral object
+ */
+export const ReferralSchema: z.ZodType<{
+	source_url?: string
+	source_id?: string
+	source_type?: string
+	headline?: string
+	body?: string
+	media_type?: string
+	image_url?: string
+	video_url?: string
+	thumbnail_url?: string
+	ctwa_clid?: string
+	welcome_message?: {
+		text: string
+	}
+}> = z.object({
+	/** Source URL */
+	source_url: z.string().optional(),
+	/** Source ID */
+	source_id: z.string().optional(),
+	/** Source type (ad, post, etc.) */
+	source_type: z.string().optional(),
+	/** Headline of the ad */
+	headline: z.string().optional(),
+	/** Body of the ad */
+	body: z.string().optional(),
+	/** Media type (image, video) */
+	media_type: z.string().optional(),
+	/** Image URL */
+	image_url: z.string().optional(),
+	/** Video URL */
+	video_url: z.string().optional(),
+	/** Thumbnail URL */
+	thumbnail_url: z.string().optional(),
+	/** Click to WhatsApp Ad ID */
+	ctwa_clid: z.string().optional(),
+	/** Welcome message */
+	welcome_message: z
+		.object({
+			text: z.string(),
+		})
+		.optional(),
+})
+
+export type Referral = z.infer<typeof ReferralSchema>
 
 /**
  * Message object
@@ -224,22 +516,10 @@ export const MessageSchema: z.ZodType<{
 	from: string
 	id: string
 	timestamp: string
-	type:
-		| 'text'
-		| 'image'
-		| 'video'
-		| 'audio'
-		| 'document'
-		| 'sticker'
-		| 'location'
-		| 'contacts'
-		| 'interactive'
-		| 'button'
-		| 'reaction'
-		| 'order'
-		| 'system'
-		| 'unknown'
+	type: string
+	group_id?: string
 	context?: z.infer<typeof ContextSchema>
+	referral?: z.infer<typeof ReferralSchema>
 	text?: { body: string }
 	image?: z.infer<typeof MediaObjectSchema>
 	video?: z.infer<typeof MediaObjectSchema>
@@ -247,12 +527,12 @@ export const MessageSchema: z.ZodType<{
 	document?: z.infer<typeof MediaObjectSchema>
 	sticker?: z.infer<typeof MediaObjectSchema>
 	location?: z.infer<typeof LocationSchema>
-	contacts?: Array<unknown>
+	contacts?: Array<z.infer<typeof ContactItemSchema>>
 	interactive?: z.infer<typeof InteractiveSchema>
 	button?: { text: string; payload?: string }
 	reaction?: z.infer<typeof ReactionSchema>
-	order?: unknown
-	system?: unknown
+	order?: z.infer<typeof OrderSchema>
+	system?: z.infer<typeof SystemMessageSchema>
 	errors?: Array<z.infer<typeof ErrorObjectSchema>>
 }> = z.object({
 	/** Sender's phone number */
@@ -262,24 +542,13 @@ export const MessageSchema: z.ZodType<{
 	/** Unix timestamp of when the message was sent */
 	timestamp: z.string(),
 	/** Type of message */
-	type: z.enum([
-		'text',
-		'image',
-		'video',
-		'audio',
-		'document',
-		'sticker',
-		'location',
-		'contacts',
-		'interactive',
-		'button',
-		'reaction',
-		'order',
-		'system',
-		'unknown',
-	]),
+	type: z.string(),
+	/** Group ID (for group messages) */
+	group_id: z.string().optional(),
 	/** Context (for replies or forwarded messages) */
 	context: ContextSchema.optional(),
+	/** Referral information (for messages from ads) */
+	referral: ReferralSchema.optional(),
 	/** Text message content */
 	text: TextMessageSchema.optional(),
 	/** Image message content */
@@ -295,7 +564,7 @@ export const MessageSchema: z.ZodType<{
 	/** Location message content */
 	location: LocationSchema.optional(),
 	/** Contacts message content */
-	contacts: z.array(z.unknown()).optional(),
+	contacts: z.array(ContactItemSchema).optional(),
 	/** Interactive message content */
 	interactive: InteractiveSchema.optional(),
 	/** Button message content */
@@ -305,9 +574,9 @@ export const MessageSchema: z.ZodType<{
 	/** Reaction message content */
 	reaction: ReactionSchema.optional(),
 	/** Order message content */
-	order: z.unknown().optional(),
+	order: OrderSchema.optional(),
 	/** System message content */
-	system: z.unknown().optional(),
+	system: SystemMessageSchema.optional(),
 	/** Errors related to the message */
 	errors: z.array(ErrorObjectSchema).optional(),
 })
@@ -343,12 +612,12 @@ export type Conversation = z.infer<typeof ConversationSchema>
  * Pricing object
  */
 export const PricingSchema: z.ZodType<{
-	pricing_model: 'CBP' | 'NBP'
+	pricing_model: string
 	billable: boolean
 	category: string
 }> = z.object({
-	/** Pricing model (CBP or NBP) */
-	pricing_model: z.enum(['CBP', 'NBP']),
+	/** Pricing model (CBP, NBP, etc.) */
+	pricing_model: z.string(),
 	/** Whether the conversation is billable */
 	billable: z.boolean(),
 	/** Conversation category for pricing */

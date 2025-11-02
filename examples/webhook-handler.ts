@@ -9,11 +9,7 @@ import {
 	type Message,
 	type MessagesWebhook,
 	MessagesWebhookSchema,
-	MessageTemplateComponentsUpdateWebhookSchema,
-	MessageTemplateQualityUpdateWebhookSchema,
 	MessageTemplateStatusUpdateWebhookSchema,
-	TemplateCategoryUpdateWebhookSchema,
-	type WhatsAppWebhook,
 	WhatsAppWebhookSchema,
 } from '../src'
 
@@ -199,7 +195,7 @@ function handleTemplateStatusUpdate(
 }
 
 // Example 5: Handling template quality updates
-function handleTemplateQualityUpdate(value: any) {
+function _handleTemplateQualityUpdate(value: any) {
 	console.log('📊 Template Quality Update')
 	console.log('Template:', value.message_template_name)
 	console.log(

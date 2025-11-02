@@ -9,7 +9,8 @@ TypeScript type definitions and Zod schemas for the WhatsApp Business Cloud API 
 
 - 🎯 **Type-safe**: Full TypeScript support with Zod runtime validation
 - 📦 **Zero dependencies**: Only peer dependency on Zod
-- 🔄 **Complete webhook coverage**: Support for messages and all template webhooks
+- 🔄 **Complete webhook coverage**: Support for all message types, statuses, and template webhooks
+- ✅ **Fully validated**: All 24 official webhook examples tested and validated
 - 🔧 **Subscription management**: Type-safe schemas for WABA subscription APIs
 - 🚀 **Tree-shakeable**: Use only what you need
 - ✨ **Auto-completion**: Full IntelliSense support in your IDE
@@ -32,11 +33,39 @@ npm install whatsapp-cloud-api-types zod
 
 This library provides Zod schemas for the following WhatsApp Cloud API webhooks:
 
-- ✅ **messages** - Incoming messages and message status updates
+#### Messages Webhook (`messages` field)
+All incoming message types and status updates are fully supported:
+
+**Message Types:**
+- ✅ Text messages
+- ✅ Audio messages (including voice notes)
+- ✅ Image messages
+- ✅ Video messages
+- ✅ Document messages
+- ✅ Sticker messages
+- ✅ Location messages
+- ✅ Contact messages
+- ✅ Button replies
+- ✅ Interactive messages (list & button replies)
+- ✅ Order messages
+- ✅ Reaction messages
+- ✅ System messages
+
+**Additional Features:**
+- ✅ Message context (replies, forwards)
+- ✅ Product references
+- ✅ Ad referrals (Click-to-WhatsApp ads)
+- ✅ Group messages
+- ✅ Message status updates (sent, delivered, read, failed)
+- ✅ Conversation tracking & pricing info
+- ✅ Error handling (all levels)
+
+**Template Webhooks:**
 - ✅ **message_template_status_update** - Template approval, rejection, or status changes
 - ✅ **message_template_quality_update** - Template quality score changes
 - ✅ **message_template_components_update** - Template component updates
 - ✅ **template_category_update** - Template category changes
+
 
 ### Subscription Management APIs
 
@@ -60,7 +89,7 @@ import { WhatsAppWebhookSchema } from 'whatsapp-cloud-api-types'
 app.post('/webhook', (req, res) => {
   try {
     const webhook = WhatsAppWebhookSchema.parse(req.body)
-    
+
     // TypeScript knows the structure
     webhook.entry.forEach(entry => {
       entry.changes.forEach(change => {
@@ -71,7 +100,7 @@ app.post('/webhook', (req, res) => {
         }
       })
     })
-    
+
     res.sendStatus(200)
   } catch (error) {
     console.error('Invalid webhook payload:', error)
@@ -96,7 +125,7 @@ webhook.entry.forEach(entry => {
     // Handle incoming messages
     change.value.messages?.forEach(message => {
       console.log(`Message from ${message.from}: ${message.text?.body}`)
-      
+
       // Type-safe access to different message types
       switch (message.type) {
         case 'text':
@@ -110,7 +139,7 @@ webhook.entry.forEach(entry => {
           break
       }
     })
-    
+
     // Handle message status updates
     change.value.statuses?.forEach(status => {
       console.log(`Message ${status.id} is now ${status.status}`)
@@ -129,7 +158,7 @@ const webhook = MessageTemplateStatusUpdateWebhookSchema.parse(req.body)
 webhook.entry.forEach(entry => {
   entry.changes.forEach(change => {
     const { event, message_template_name, reason } = change.value
-    
+
     switch (event) {
       case 'APPROVED':
         console.log(`Template ${message_template_name} was approved!`)
@@ -158,9 +187,9 @@ const webhook = MessageTemplateQualityUpdateWebhookSchema.parse(req.body)
 webhook.entry.forEach(entry => {
   entry.changes.forEach(change => {
     const { message_template_name, previous_quality_score, new_quality_score } = change.value
-    
+
     console.log(`Template "${message_template_name}" quality changed from ${previous_quality_score} to ${new_quality_score}`)
-    
+
     if (new_quality_score === 'RED') {
       console.warn('⚠️ Template quality is now RED! Consider reviewing your template.')
     }
@@ -178,14 +207,14 @@ const webhook = MessageTemplateComponentsUpdateWebhookSchema.parse(req.body)
 webhook.entry.forEach(entry => {
   entry.changes.forEach(change => {
     const template = change.value
-    
+
     console.log(`Template "${template.message_template_name}" was updated`)
     console.log('Body:', template.message_template_element)
-    
+
     if (template.message_template_title) {
       console.log('Header:', template.message_template_title)
     }
-    
+
     if (template.message_template_buttons) {
       console.log('Buttons:', template.message_template_buttons.map(b => b.message_template_button_text))
     }
@@ -203,7 +232,7 @@ const webhook = TemplateCategoryUpdateWebhookSchema.parse(req.body)
 webhook.entry.forEach(entry => {
   entry.changes.forEach(change => {
     const value = change.value
-    
+
     // Check if it's an impending change notification
     if ('correct_category' in value) {
       console.log(`Template "${value.message_template_name}" will be recategorized from ${value.new_category} to ${value.correct_category} in 24 hours`)
@@ -225,15 +254,15 @@ import { WhatsAppWebhookSchema } from 'whatsapp-cloud-api-types'
 
 app.post('/webhook', (req, res) => {
   const result = WhatsAppWebhookSchema.safeParse(req.body)
-  
+
   if (!result.success) {
     console.error('Validation failed:', result.error.issues)
     return res.sendStatus(400)
   }
-  
+
   const webhook = result.data
   // Process webhook...
-  
+
   res.sendStatus(200)
 })
 ```
@@ -247,7 +276,7 @@ import { WhatsAppWebhook } from 'whatsapp-cloud-api-types'
 
 function handleWebhook(webhook: WhatsAppWebhook) {
   const change = webhook.entry[0].changes[0]
-  
+
   switch (change.field) {
     case 'messages':
       handleMessages(change.value)
@@ -266,11 +295,11 @@ function handleWebhook(webhook: WhatsAppWebhook) {
 ### Extract Specific Types
 
 ```typescript
-import type { 
-  Message, 
-  Status, 
+import type {
+  Message,
+  Status,
   TemplateStatusEvent,
-  TemplateQualityScore 
+  TemplateQualityScore
 } from 'whatsapp-cloud-api-types'
 
 function processMessage(message: Message) {
@@ -326,9 +355,9 @@ result.data.forEach(app => {
 ### Override Callback URL
 
 ```typescript
-import { 
+import {
   OverrideCallbackURLRequestSchema,
-  OverrideCallbackURLResponseSchema 
+  OverrideCallbackURLResponseSchema
 } from 'whatsapp-cloud-api-types'
 
 const requestBody = OverrideCallbackURLRequestSchema.parse({
@@ -437,6 +466,17 @@ bun run lint:fix
 ## License
 
 MIT © [Your Name]
+
+## Testing
+
+All webhook types are validated against real examples from the WhatsApp Cloud API documentation:
+
+```bash
+# Run all tests including validation of 24 official webhook examples
+bun test
+```
+
+The test suite validates every message type, status update, and error scenario to ensure 100% compatibility with the WhatsApp Cloud API.
 
 ## Resources
 
