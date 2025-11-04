@@ -4,6 +4,7 @@ TypeScript type definitions, Zod schemas, and a fully-typed API client for the W
 
 [![npm version](https://img.shields.io/npm/v/whatsapp-cloud-api-types.svg)](https://www.npmjs.com/package/whatsapp-cloud-api-types)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Edge Runtime Compatible](https://img.shields.io/badge/Edge%20Runtime-Compatible-brightgreen)](./EDGE_COMPATIBILITY.md)
 
 ## Features
 
@@ -14,6 +15,7 @@ TypeScript type definitions, Zod schemas, and a fully-typed API client for the W
 - 🔧 **Subscription management**: Type-safe schemas for WABA subscription APIs
 - 🚀 **Tree-shakeable**: Use only what you need
 - ✨ **Auto-completion**: Full IntelliSense support in your IDE
+- ⚡ **Edge Runtime Compatible**: Works in Cloudflare Workers, Vercel Edge, Deno Deploy, and more ([details](./EDGE_COMPATIBILITY.md))
 - 🤖 **API Client**: Complete, type-safe WhatsApp Cloud API client with fetch-based requests
 - 📤 **Send Messages**: All message types supported (text, media, interactive, templates, etc.)
 - 📁 **Media Management**: Upload, download, and manage media files

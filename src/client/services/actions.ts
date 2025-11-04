@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { type ApiResponse, BaseService } from '../config'
+import { MessagesService } from './messages'
 
 /**
  * Chat action schema
@@ -142,8 +143,7 @@ export class ActionsService extends BaseService {
 		message: string,
 		delayMs = 2000,
 	): Promise<ApiResponse> {
-		// Import messages service dynamically to avoid circular dependency
-		const { MessagesService } = await import('./messages')
+		// Create messages service instance
 		const messagesService = new MessagesService(this.config)
 
 		// Send typing indicator

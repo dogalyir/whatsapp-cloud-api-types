@@ -1,17 +1,11 @@
 import { defineConfig } from 'bunup'
 
 export default defineConfig({
-	// Generate multiple output formats for better compatibility
-	format: ['esm', 'cjs'],
-
-	// Target Node.js environment (most common for this library)
-	target: 'node',
-
 	// Externalize Zod to avoid bundling it (it's a dependency)
 	packages: 'external',
 
-	// Enable code splitting for better tree-shaking
-	splitting: true,
+	// Disable code splitting to avoid CommonJS helpers that break in Workers
+	splitting: false,
 
 	// Enable minification for production builds
 	minify: true,
@@ -24,8 +18,8 @@ export default defineConfig({
 		// Enable type inference to handle isolatedDeclarations
 		inferTypes: true,
 
-		// Enable declaration splitting to share common types
-		splitting: true,
+		// Disable declaration splitting to avoid module resolution issues
+		splitting: false,
 
 		// Minify declaration files to reduce size
 		minify: true,
