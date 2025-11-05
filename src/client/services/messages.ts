@@ -375,6 +375,62 @@ export type InteractiveListMessage = z.infer<
 >
 
 /**
+ * Interactive CTA URL message schema
+ */
+export const InteractiveCtaUrlMessageSchema = z.object({
+	messaging_product: z.literal('whatsapp').default('whatsapp'),
+	recipient_type: z.literal('individual').default('individual'),
+	to: z.string(),
+	type: z.literal('interactive'),
+	interactive: z.object({
+		type: z.literal('cta_url'),
+		header: z
+			.object({
+				type: z.enum(['text', 'image', 'video', 'document']),
+				text: z.string().max(60).optional(),
+				image: z
+					.object({
+						id: z.string().optional(),
+						link: z.string().url().optional(),
+					})
+					.optional(),
+				video: z
+					.object({
+						id: z.string().optional(),
+						link: z.string().url().optional(),
+					})
+					.optional(),
+				document: z
+					.object({
+						id: z.string().optional(),
+						link: z.string().url().optional(),
+					})
+					.optional(),
+			})
+			.optional(),
+		body: z.object({
+			text: z.string().max(1024),
+		}),
+		footer: z
+			.object({
+				text: z.string().max(60),
+			})
+			.optional(),
+		action: z.object({
+			name: z.literal('cta_url'),
+			parameters: z.object({
+				display_text: z.string().max(20),
+				url: z.string().url(),
+			}),
+		}),
+	}),
+})
+
+export type InteractiveCtaUrlMessage = z.infer<
+	typeof InteractiveCtaUrlMessageSchema
+>
+
+/**
  * Reaction message schema
  */
 export const ReactionMessageSchema = z.object({
@@ -664,6 +720,25 @@ export class MessagesService extends BaseService {
 	 */
 	async removeReaction(to: string, messageId: string): Promise<ApiResponse> {
 		return this.sendReaction(to, messageId, '')
+	}
+
+	/**
+	 * Send an interactive CTA URL message (call-to-action)
+	 */
+	async sendCtaUrl(
+		to: string,
+		interactive: z.infer<typeof InteractiveCtaUrlMessageSchema>['interactive'],
+	): Promise<ApiResponse> {
+		const payload = InteractiveCtaUrlMessageSchema.parse({
+			to,
+			type: 'interactive',
+			interactive,
+		})
+
+		return this.request<ApiResponse>(`${this.config.phoneNumberId}/messages`, {
+			method: 'POST',
+			body: JSON.stringify(payload),
+		})
 	}
 
 	/**

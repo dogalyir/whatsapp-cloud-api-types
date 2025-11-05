@@ -155,6 +155,45 @@ async function demonstrateAllFeatures() {
 		},
 	})
 
+	// Send interactive CTA URL button
+	console.log('- Sending CTA URL button...')
+	await client.messages.sendCtaUrl(recipientPhone, {
+		type: 'cta_url',
+		body: {
+			text: 'Visit our website for more information!',
+		},
+		action: {
+			name: 'cta_url',
+			parameters: {
+				display_text: 'Visit Website',
+				url: 'https://example.com',
+			},
+		},
+	})
+
+	// Send CTA URL with header
+	console.log('- Sending CTA URL with header...')
+	await client.messages.sendCtaUrl(recipientPhone, {
+		type: 'cta_url',
+		header: {
+			type: 'text',
+			text: 'Special Offer!',
+		},
+		body: {
+			text: 'Check out our amazing deals and discounts.',
+		},
+		footer: {
+			text: 'Limited time only',
+		},
+		action: {
+			name: 'cta_url',
+			parameters: {
+				display_text: 'Shop Now',
+				url: 'https://example.com/shop',
+			},
+		},
+	})
+
 	// Send reaction
 	console.log('- Sending reaction...')
 	const messageId = textResponse.messages?.[0]?.id

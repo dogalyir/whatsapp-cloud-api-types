@@ -70,6 +70,19 @@ await client.messages.sendInteractiveButtons('1234567890', {
   }
 })
 
+// Send CTA URL button
+await client.messages.sendCtaUrl('1234567890', {
+  type: 'cta_url',
+  body: { text: 'Visit our website for more information!' },
+  action: {
+    name: 'cta_url',
+    parameters: {
+      display_text: 'Visit Website',
+      url: 'https://example.com'
+    }
+  }
+})
+
 // Upload and send media
 const media = await client.media.upload(file, 'image/jpeg')
 await client.messages.sendImage('1234567890', { id: media.id })

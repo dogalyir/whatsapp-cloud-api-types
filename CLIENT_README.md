@@ -294,6 +294,68 @@ await client.messages.sendInteractiveList('1234567890', {
 })
 ```
 
+#### Mensajes Interactivos - Botón CTA URL
+
+```typescript
+// Botón CTA URL simple
+await client.messages.sendCtaUrl('1234567890', {
+  type: 'cta_url',
+  body: {
+    text: 'Visita nuestro sitio web para más información',
+  },
+  action: {
+    name: 'cta_url',
+    parameters: {
+      display_text: 'Visitar Sitio',
+      url: 'https://example.com',
+    },
+  },
+})
+
+// Botón CTA URL con encabezado y pie de página
+await client.messages.sendCtaUrl('1234567890', {
+  type: 'cta_url',
+  header: {
+    type: 'text',
+    text: 'Oferta Especial',
+  },
+  body: {
+    text: 'Aprovecha nuestras increíbles ofertas y descuentos.',
+  },
+  footer: {
+    text: 'Oferta por tiempo limitado',
+  },
+  action: {
+    name: 'cta_url',
+    parameters: {
+      display_text: 'Comprar Ahora',
+      url: 'https://example.com/ofertas',
+    },
+  },
+})
+
+// Botón CTA URL con imagen
+await client.messages.sendCtaUrl('1234567890', {
+  type: 'cta_url',
+  header: {
+    type: 'image',
+    image: {
+      link: 'https://example.com/producto.jpg',
+    },
+  },
+  body: {
+    text: 'Nuevo producto lanzado. Haz clic para ver detalles.',
+  },
+  action: {
+    name: 'cta_url',
+    parameters: {
+      display_text: 'Ver Producto',
+      url: 'https://example.com/productos/nuevo',
+    },
+  },
+})
+```
+
 #### Reacciones
 
 ```typescript

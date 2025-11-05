@@ -250,6 +250,109 @@ describe('Message Schemas', () => {
 		expect(message.interactive.type).toBe('list')
 		expect(message.interactive.action.sections).toHaveLength(1)
 	})
+
+	test('should validate interactive CTA URL message schema', async () => {
+		const { InteractiveCtaUrlMessageSchema } = await import(
+			'../src/client/services/messages'
+		)
+
+		const message = InteractiveCtaUrlMessageSchema.parse({
+			to: '1234567890',
+			type: 'interactive',
+			interactive: {
+				type: 'cta_url',
+				body: {
+					text: 'Visit our website for more information!',
+				},
+				action: {
+					name: 'cta_url',
+					parameters: {
+						display_text: 'Visit Website',
+						url: 'https://example.com',
+					},
+				},
+			},
+		})
+
+		expect(message.interactive.type).toBe('cta_url')
+		expect(message.interactive.action.name).toBe('cta_url')
+		expect(message.interactive.action.parameters.display_text).toBe(
+			'Visit Website',
+		)
+		expect(message.interactive.action.parameters.url).toBe(
+			'https://example.com',
+		)
+	})
+
+	test('should validate CTA URL message with header and footer', async () => {
+		const { InteractiveCtaUrlMessageSchema } = await import(
+			'../src/client/services/messages'
+		)
+
+		const message = InteractiveCtaUrlMessageSchema.parse({
+			to: '1234567890',
+			type: 'interactive',
+			interactive: {
+				type: 'cta_url',
+				header: {
+					type: 'text',
+					text: 'Special Offer!',
+				},
+				body: {
+					text: 'Check out our amazing deals.',
+				},
+				footer: {
+					text: 'Limited time only',
+				},
+				action: {
+					name: 'cta_url',
+					parameters: {
+						display_text: 'Shop Now',
+						url: 'https://example.com/shop',
+					},
+				},
+			},
+		})
+
+		expect(message.interactive.header?.type).toBe('text')
+		expect(message.interactive.header?.text).toBe('Special Offer!')
+		expect(message.interactive.footer?.text).toBe('Limited time only')
+	})
+
+	test('should validate CTA URL message with image header', async () => {
+		const { InteractiveCtaUrlMessageSchema } = await import(
+			'../src/client/services/messages'
+		)
+
+		const message = InteractiveCtaUrlMessageSchema.parse({
+			to: '1234567890',
+			type: 'interactive',
+			interactive: {
+				type: 'cta_url',
+				header: {
+					type: 'image',
+					image: {
+						link: 'https://example.com/image.jpg',
+					},
+				},
+				body: {
+					text: 'New product launched!',
+				},
+				action: {
+					name: 'cta_url',
+					parameters: {
+						display_text: 'View Product',
+						url: 'https://example.com/products/new',
+					},
+				},
+			},
+		})
+
+		expect(message.interactive.header?.type).toBe('image')
+		expect(message.interactive.header?.image?.link).toBe(
+			'https://example.com/image.jpg',
+		)
+	})
 })
 
 describe('Business Profile Schema', () => {

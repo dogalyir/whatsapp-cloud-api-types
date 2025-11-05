@@ -220,6 +220,7 @@ export type {
 	DocumentMessage as SendDocumentMessage,
 	ImageMessage as SendImageMessage,
 	InteractiveButtonMessage as SendInteractiveButtonMessage,
+	InteractiveCtaUrlMessage as SendInteractiveCtaUrlMessage,
 	InteractiveListMessage as SendInteractiveListMessage,
 	LocationMessage as SendLocationMessage,
 	MessageContext as SendMessageContext,
