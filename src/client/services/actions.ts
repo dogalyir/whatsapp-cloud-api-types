@@ -35,6 +35,20 @@ export const MarkAsReadSchema = z.object({
 export type MarkAsRead = z.infer<typeof MarkAsReadSchema>
 
 /**
+ * Typing indicator schema
+ */
+export const TypingIndicatorSchema = z.object({
+	messaging_product: z.literal('whatsapp').default('whatsapp'),
+	status: z.literal('read'),
+	message_id: z.string(),
+	typing_indicator: z.object({
+		type: z.literal('text'),
+	}),
+})
+
+export type TypingIndicator = z.infer<typeof TypingIndicatorSchema>
+
+/**
  * Actions Service
  *
  * Service for managing chat actions like typing indicators and read receipts.
@@ -106,6 +120,38 @@ export class ActionsService extends BaseService {
 			messaging_product: 'whatsapp',
 			status: 'read',
 			message_id: messageId,
+		})
+
+		const response = await this.request<ChatActionResponse>(
+			`${this.config.phoneNumberId}/messages`,
+			{
+				method: 'POST',
+				body: JSON.stringify(payload),
+			},
+		)
+
+		return ChatActionResponseSchema.parse(response)
+	}
+
+	/**
+	 * Send a typing indicator for a specific message
+	 * This combines marking a message as read with sending a typing indicator.
+	 *
+	 * @param messageId - Message ID to mark as read with typing indicator
+	 * @returns Action response
+	 *
+	 * @example
+	 * ```typescript
+	 * // Mark message as read and show typing indicator
+	 * await client.actions.typingIndicator('wamid.xxx')
+	 * ```
+	 */
+	async typingIndicator(messageId: string): Promise<ChatActionResponse> {
+		const payload = TypingIndicatorSchema.parse({
+			messaging_product: 'whatsapp',
+			status: 'read',
+			message_id: messageId,
+			typing_indicator: { type: 'text' },
 		})
 
 		const response = await this.request<ChatActionResponse>(

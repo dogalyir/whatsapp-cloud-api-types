@@ -195,6 +195,7 @@ export type {
 	ChatAction,
 	ChatActionResponse,
 	MarkAsRead,
+	TypingIndicator,
 } from './services/actions'
 export { ActionsService } from './services/actions'
 // Re-export business types (no conflicts)
