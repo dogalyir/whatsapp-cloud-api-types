@@ -1,6 +1,6 @@
 {
 	"name": "whatsapp-cloud-api-types",
-	"version": "0.5.0",
+	"version": "0.6.0",
 	"description": "All types of the WhatsApp Business cloud API in Zod",
 	"homepage": "https://github.com/Dogalyir/whatsapp-cloud-api-types#readme",
 	"bugs": {

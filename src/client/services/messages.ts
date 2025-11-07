@@ -9,6 +9,11 @@ export const TextMessageSchema = z.object({
 	messaging_product: z.literal('whatsapp').default('whatsapp'),
 	recipient_type: z.literal('individual').default('individual'),
 	to: z.string(),
+	context: z
+		.object({
+			message_id: z.string(),
+		})
+		.optional(),
 	type: z.literal('text'),
 	text: z.object({
 		preview_url: z.boolean().optional(),
@@ -25,6 +30,11 @@ export const ImageMessageSchema = z.object({
 	messaging_product: z.literal('whatsapp').default('whatsapp'),
 	recipient_type: z.literal('individual').default('individual'),
 	to: z.string(),
+	context: z
+		.object({
+			message_id: z.string(),
+		})
+		.optional(),
 	type: z.literal('image'),
 	image: z.object({
 		id: z.string().optional(),
@@ -42,6 +52,11 @@ export const AudioMessageSchema = z.object({
 	messaging_product: z.literal('whatsapp').default('whatsapp'),
 	recipient_type: z.literal('individual').default('individual'),
 	to: z.string(),
+	context: z
+		.object({
+			message_id: z.string(),
+		})
+		.optional(),
 	type: z.literal('audio'),
 	audio: z.object({
 		id: z.string().optional(),
@@ -58,6 +73,11 @@ export const VideoMessageSchema = z.object({
 	messaging_product: z.literal('whatsapp').default('whatsapp'),
 	recipient_type: z.literal('individual').default('individual'),
 	to: z.string(),
+	context: z
+		.object({
+			message_id: z.string(),
+		})
+		.optional(),
 	type: z.literal('video'),
 	video: z.object({
 		id: z.string().optional(),
@@ -75,6 +95,11 @@ export const DocumentMessageSchema = z.object({
 	messaging_product: z.literal('whatsapp').default('whatsapp'),
 	recipient_type: z.literal('individual').default('individual'),
 	to: z.string(),
+	context: z
+		.object({
+			message_id: z.string(),
+		})
+		.optional(),
 	type: z.literal('document'),
 	document: z.object({
 		id: z.string().optional(),
@@ -93,6 +118,11 @@ export const StickerMessageSchema = z.object({
 	messaging_product: z.literal('whatsapp').default('whatsapp'),
 	recipient_type: z.literal('individual').default('individual'),
 	to: z.string(),
+	context: z
+		.object({
+			message_id: z.string(),
+		})
+		.optional(),
 	type: z.literal('sticker'),
 	sticker: z.object({
 		id: z.string().optional(),
@@ -109,6 +139,11 @@ export const LocationMessageSchema = z.object({
 	messaging_product: z.literal('whatsapp').default('whatsapp'),
 	recipient_type: z.literal('individual').default('individual'),
 	to: z.string(),
+	context: z
+		.object({
+			message_id: z.string(),
+		})
+		.optional(),
 	type: z.literal('location'),
 	location: z.object({
 		longitude: z.number(),
@@ -127,6 +162,11 @@ export const ContactMessageSchema = z.object({
 	messaging_product: z.literal('whatsapp').default('whatsapp'),
 	recipient_type: z.literal('individual').default('individual'),
 	to: z.string(),
+	context: z
+		.object({
+			message_id: z.string(),
+		})
+		.optional(),
 	type: z.literal('contacts'),
 	contacts: z.array(
 		z.object({
@@ -197,6 +237,11 @@ export const TemplateMessageSchema = z.object({
 	messaging_product: z.literal('whatsapp').default('whatsapp'),
 	recipient_type: z.literal('individual').default('individual'),
 	to: z.string(),
+	context: z
+		.object({
+			message_id: z.string(),
+		})
+		.optional(),
 	type: z.literal('template'),
 	template: z.object({
 		name: z.string(),
@@ -268,6 +313,11 @@ export const InteractiveButtonMessageSchema = z.object({
 	messaging_product: z.literal('whatsapp').default('whatsapp'),
 	recipient_type: z.literal('individual').default('individual'),
 	to: z.string(),
+	context: z
+		.object({
+			message_id: z.string(),
+		})
+		.optional(),
 	type: z.literal('interactive'),
 	interactive: z.object({
 		type: z.literal('button'),
@@ -331,6 +381,11 @@ export const InteractiveListMessageSchema = z.object({
 	messaging_product: z.literal('whatsapp').default('whatsapp'),
 	recipient_type: z.literal('individual').default('individual'),
 	to: z.string(),
+	context: z
+		.object({
+			message_id: z.string(),
+		})
+		.optional(),
 	type: z.literal('interactive'),
 	interactive: z.object({
 		type: z.literal('list'),
@@ -381,6 +436,11 @@ export const InteractiveCtaUrlMessageSchema = z.object({
 	messaging_product: z.literal('whatsapp').default('whatsapp'),
 	recipient_type: z.literal('individual').default('individual'),
 	to: z.string(),
+	context: z
+		.object({
+			message_id: z.string(),
+		})
+		.optional(),
 	type: z.literal('interactive'),
 	interactive: z.object({
 		type: z.literal('cta_url'),
@@ -437,6 +497,11 @@ export const ReactionMessageSchema = z.object({
 	messaging_product: z.literal('whatsapp').default('whatsapp'),
 	recipient_type: z.literal('individual').default('individual'),
 	to: z.string(),
+	context: z
+		.object({
+			message_id: z.string(),
+		})
+		.optional(),
 	type: z.literal('reaction'),
 	reaction: z.object({
 		message_id: z.string(),
@@ -467,9 +532,11 @@ export class MessagesService extends BaseService {
 		to: string,
 		text: string,
 		previewUrl = false,
+		replyToMessageId?: string,
 	): Promise<ApiResponse> {
 		const payload = TextMessageSchema.parse({
 			to,
+			context: replyToMessageId ? { message_id: replyToMessageId } : undefined,
 			type: 'text',
 			text: {
 				body: text,
@@ -490,9 +557,11 @@ export class MessagesService extends BaseService {
 		to: string,
 		image: { id?: string; link?: string },
 		caption?: string,
+		replyToMessageId?: string,
 	): Promise<ApiResponse> {
 		const payload = ImageMessageSchema.parse({
 			to,
+			context: replyToMessageId ? { message_id: replyToMessageId } : undefined,
 			type: 'image',
 			image: {
 				...image,
@@ -512,9 +581,11 @@ export class MessagesService extends BaseService {
 	async sendAudio(
 		to: string,
 		audio: { id?: string; link?: string },
+		replyToMessageId?: string,
 	): Promise<ApiResponse> {
 		const payload = AudioMessageSchema.parse({
 			to,
+			context: replyToMessageId ? { message_id: replyToMessageId } : undefined,
 			type: 'audio',
 			audio,
 		})
@@ -532,9 +603,11 @@ export class MessagesService extends BaseService {
 		to: string,
 		video: { id?: string; link?: string },
 		caption?: string,
+		replyToMessageId?: string,
 	): Promise<ApiResponse> {
 		const payload = VideoMessageSchema.parse({
 			to,
+			context: replyToMessageId ? { message_id: replyToMessageId } : undefined,
 			type: 'video',
 			video: {
 				...video,
@@ -556,9 +629,11 @@ export class MessagesService extends BaseService {
 		document: { id?: string; link?: string },
 		caption?: string,
 		filename?: string,
+		replyToMessageId?: string,
 	): Promise<ApiResponse> {
 		const payload = DocumentMessageSchema.parse({
 			to,
+			context: replyToMessageId ? { message_id: replyToMessageId } : undefined,
 			type: 'document',
 			document: {
 				...document,
@@ -579,9 +654,11 @@ export class MessagesService extends BaseService {
 	async sendSticker(
 		to: string,
 		sticker: { id?: string; link?: string },
+		replyToMessageId?: string,
 	): Promise<ApiResponse> {
 		const payload = StickerMessageSchema.parse({
 			to,
+			context: replyToMessageId ? { message_id: replyToMessageId } : undefined,
 			type: 'sticker',
 			sticker,
 		})
@@ -603,9 +680,11 @@ export class MessagesService extends BaseService {
 			name?: string
 			address?: string
 		},
+		replyToMessageId?: string,
 	): Promise<ApiResponse> {
 		const payload = LocationMessageSchema.parse({
 			to,
+			context: replyToMessageId ? { message_id: replyToMessageId } : undefined,
 			type: 'location',
 			location,
 		})
@@ -621,10 +700,12 @@ export class MessagesService extends BaseService {
 	 */
 	async sendContacts(
 		to: string,
-		contacts: z.infer<typeof ContactMessageSchema>['contacts'],
+		contacts: ContactMessage['contacts'],
+		replyToMessageId?: string,
 	): Promise<ApiResponse> {
 		const payload = ContactMessageSchema.parse({
 			to,
+			context: replyToMessageId ? { message_id: replyToMessageId } : undefined,
 			type: 'contacts',
 			contacts,
 		})
@@ -640,10 +721,12 @@ export class MessagesService extends BaseService {
 	 */
 	async sendTemplate(
 		to: string,
-		template: z.infer<typeof TemplateMessageSchema>['template'],
+		template: TemplateMessage['template'],
+		replyToMessageId?: string,
 	): Promise<ApiResponse> {
 		const payload = TemplateMessageSchema.parse({
 			to,
+			context: replyToMessageId ? { message_id: replyToMessageId } : undefined,
 			type: 'template',
 			template,
 		})
@@ -659,10 +742,12 @@ export class MessagesService extends BaseService {
 	 */
 	async sendInteractiveButtons(
 		to: string,
-		interactive: z.infer<typeof InteractiveButtonMessageSchema>['interactive'],
+		interactive: InteractiveButtonMessage['interactive'],
+		replyToMessageId?: string,
 	): Promise<ApiResponse> {
 		const payload = InteractiveButtonMessageSchema.parse({
 			to,
+			context: replyToMessageId ? { message_id: replyToMessageId } : undefined,
 			type: 'interactive',
 			interactive,
 		})
@@ -678,10 +763,12 @@ export class MessagesService extends BaseService {
 	 */
 	async sendInteractiveList(
 		to: string,
-		interactive: z.infer<typeof InteractiveListMessageSchema>['interactive'],
+		interactive: InteractiveListMessage['interactive'],
+		replyToMessageId?: string,
 	): Promise<ApiResponse> {
 		const payload = InteractiveListMessageSchema.parse({
 			to,
+			context: replyToMessageId ? { message_id: replyToMessageId } : undefined,
 			type: 'interactive',
 			interactive,
 		})
@@ -699,9 +786,11 @@ export class MessagesService extends BaseService {
 		to: string,
 		messageId: string,
 		emoji: string,
+		replyToMessageId?: string,
 	): Promise<ApiResponse> {
 		const payload = ReactionMessageSchema.parse({
 			to,
+			context: replyToMessageId ? { message_id: replyToMessageId } : undefined,
 			type: 'reaction',
 			reaction: {
 				message_id: messageId,
@@ -727,10 +816,12 @@ export class MessagesService extends BaseService {
 	 */
 	async sendCtaUrl(
 		to: string,
-		interactive: z.infer<typeof InteractiveCtaUrlMessageSchema>['interactive'],
+		interactive: InteractiveCtaUrlMessage['interactive'],
+		replyToMessageId?: string,
 	): Promise<ApiResponse> {
 		const payload = InteractiveCtaUrlMessageSchema.parse({
 			to,
+			context: replyToMessageId ? { message_id: replyToMessageId } : undefined,
 			type: 'interactive',
 			interactive,
 		})
