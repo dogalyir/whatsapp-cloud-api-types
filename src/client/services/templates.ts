@@ -206,6 +206,14 @@ export type TemplateDeleteResponse = z.infer<
  * ```
  */
 export class TemplatesService extends BaseService {
+	private requireWabaId(): string {
+		if (!this.config.wabaId) {
+			throw new Error('wabaId is required for template operations')
+		}
+
+		return this.config.wabaId
+	}
+
 	/**
 	 * Create a new message template
 	 *
@@ -230,10 +238,11 @@ export class TemplatesService extends BaseService {
 	async create(
 		template: z.input<typeof CreateTemplateSchema>,
 	): Promise<TemplateResponse> {
+		const wabaId = this.requireWabaId()
 		const validatedTemplate = CreateTemplateSchema.parse(template)
 
 		const response = await this.request<TemplateResponse>(
-			`${this.config.wabaId}/message_templates`,
+			`${wabaId}/message_templates`,
 			{
 				method: 'POST',
 				body: JSON.stringify(validatedTemplate),
@@ -259,6 +268,7 @@ export class TemplatesService extends BaseService {
 		limit?: number
 		after?: string
 	}): Promise<TemplateListResponse> {
+		const wabaId = this.requireWabaId()
 		const params = new URLSearchParams()
 
 		if (options?.limit) {
@@ -270,7 +280,7 @@ export class TemplatesService extends BaseService {
 		}
 
 		const queryString = params.toString()
-		const path = `${this.config.wabaId}/message_templates${queryString ? `?${queryString}` : ''}`
+		const path = `${wabaId}/message_templates${queryString ? `?${queryString}` : ''}`
 
 		const response = await this.request<TemplateListResponse>(path, {
 			method: 'GET',
@@ -315,6 +325,7 @@ export class TemplatesService extends BaseService {
 		name: string,
 		options?: { hsm_id?: string },
 	): Promise<TemplateDeleteResponse> {
+		const wabaId = this.requireWabaId()
 		const params = new URLSearchParams({ name })
 
 		if (options?.hsm_id) {
@@ -322,7 +333,7 @@ export class TemplatesService extends BaseService {
 		}
 
 		const response = await this.request<TemplateDeleteResponse>(
-			`${this.config.wabaId}/message_templates?${params.toString()}`,
+			`${wabaId}/message_templates?${params.toString()}`,
 			{
 				method: 'DELETE',
 			},
@@ -371,10 +382,11 @@ export class TemplatesService extends BaseService {
 	 * ```
 	 */
 	async getByName(name: string): Promise<TemplateListResponse> {
+		const wabaId = this.requireWabaId()
 		const params = new URLSearchParams({ name })
 
 		const response = await this.request<TemplateListResponse>(
-			`${this.config.wabaId}/message_templates?${params.toString()}`,
+			`${wabaId}/message_templates?${params.toString()}`,
 			{
 				method: 'GET',
 			},
@@ -399,6 +411,7 @@ export class TemplatesService extends BaseService {
 		status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'PAUSED' | 'DISABLED',
 		options?: { limit?: number; after?: string },
 	): Promise<TemplateListResponse> {
+		const wabaId = this.requireWabaId()
 		const params = new URLSearchParams({ status })
 
 		if (options?.limit) {
@@ -410,7 +423,7 @@ export class TemplatesService extends BaseService {
 		}
 
 		const response = await this.request<TemplateListResponse>(
-			`${this.config.wabaId}/message_templates?${params.toString()}`,
+			`${wabaId}/message_templates?${params.toString()}`,
 			{
 				method: 'GET',
 			},

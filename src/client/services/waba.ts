@@ -108,7 +108,7 @@ export class WABAService {
 
 	constructor(config: WhatsAppConfig) {
 		this.config = config
-		this.baseUrl = `https://graph.facebook.com/${config.version}`
+		this.baseUrl = `${config.baseUrl}/${config.version}`
 	}
 
 	/**
