@@ -92,7 +92,7 @@ export class WebhooksService {
 
 	constructor(config: WhatsAppConfig) {
 		this.config = config
-		this.baseUrl = `https://graph.facebook.com/${config.version}`
+		this.baseUrl = `${config.baseUrl}/${config.version}`
 	}
 
 	/**
