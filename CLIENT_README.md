@@ -31,7 +31,7 @@ bun add whatsapp-cloud-api-types
 ## Inicio Rápido
 
 ```typescript
-import { WhatsAppCloudAPI } from 'whatsapp-cloud-api-types/client'
+import { WhatsAppCloudAPI } from 'whatsapp-cloud-api-types'
 
 // Inicializar el cliente
 const client = new WhatsAppCloudAPI({
@@ -907,7 +907,7 @@ await client.webhooks.unsubscribe('waba-id')
 El cliente utiliza la clase personalizada `WhatsAppApiError` para errores de API.
 
 ```typescript
-import { WhatsAppApiError } from 'whatsapp-cloud-api-types/client'
+import { WhatsAppApiError } from 'whatsapp-cloud-api-types'
 
 try {
   await client.messages.sendText('numero-invalido', 'Hola')
@@ -948,7 +948,7 @@ import type {
   BusinessProfile,
   PhoneNumber,
   WABA,
-} from 'whatsapp-cloud-api-types/client'
+} from 'whatsapp-cloud-api-types'
 
 // Los tipos están completamente tipados con TypeScript
 const message: TextMessage = {
@@ -1011,7 +1011,7 @@ import {
   type MediaUploadResponse,
   
   // Y muchos más...
-} from 'whatsapp-cloud-api-types/client'
+} from 'whatsapp-cloud-api-types'
 ```
 
 ## Ejemplos Completos
@@ -1019,7 +1019,7 @@ import {
 ### Bot de Atención al Cliente
 
 ```typescript
-import { WhatsAppCloudAPI } from 'whatsapp-cloud-api-types/client'
+import { WhatsAppCloudAPI } from 'whatsapp-cloud-api-types'
 
 const client = new WhatsAppCloudAPI({
   accessToken: process.env.WHATSAPP_ACCESS_TOKEN!,
